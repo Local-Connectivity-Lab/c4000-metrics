@@ -12,7 +12,7 @@ concatenated with the data collection time in UNIX epoch seconds, eg.
 
 The data within the files looks like:
 
-```
+```json
 {
    "1671260819": [
       {
