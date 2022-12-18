@@ -36,7 +36,8 @@ NET_STATS_COLUMNS="interface,rx-bytes,rx-packets,rx-errs,rx-drop,rx-fifo,rx-fram
 # tail +3 strips the column headers so only data is seen
 # interface names look like "wlan0:", so use tr to strip the colon
 tail +3 <(tr -d ':'  <<< "$NET_STATS") | column --table-columns "$NET_STATS_COLUMNS" --table-name "$NOW" --json > "$NET_STATS_OUTPUT_FILE"
-NET_STATS_OUTPUT_FILE="${OUTPUT_DIR}/${HOSTNAME}-arp-table-${NOW}.json"
+ARP_TABLE_OUTPUT_FILE="${OUTPUT_DIR}/${HOSTNAME}-arp-table-${NOW}.json"
 (tail +2 <<< "$ARP_TABLE") | column --table-columns ip,hwtype,flags,hwaddr,mask,dev --table-name "$NOW" --json > "$ARP_TABLE_OUTPUT_FILE"
 
 echo "wrote $NET_STATS_OUTPUT_FILE"
+echo "wrote $ARP_TABLE_OUTPUT_FILE"
