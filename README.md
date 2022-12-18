@@ -1,16 +1,17 @@
 # Collecting stats
-Use the script `collect-c4000-net-stats.sh` to collect metrics. Fill out the
-`HOSTNAME` and `PASSWORD` fields in the shell script with the hostname of the
-C4000 and the password of the admin user. This is obviously not very secure, so
-exercise caution; set the permissions of the script tightly and limit access to
-the machine containing the plaintext credentials.
+Use the script `collect-c4000-net-stats.sh` to collect packet metrics and arp
+table entries. Fill out the `HOSTNAME` and `PASSWORD` fields in the shell
+script with the hostname of the C4000 and the password of the admin user. This
+is obviously not very secure, so exercise caution; set the permissions of the
+script tightly and limit access to the machine containing the plaintext
+credentials.
 
-The collected metrics will be saved as JSON-formatted text in directory set in
-the `OUTPUT_DIR` environment variable. The filename is the hostname
-concatenated with the data collection time in UNIX epoch seconds, eg.
-`my-host.net-1671260819.json`.
+The collected metrics will be saved as JSON-formatted text files in directory
+set in the `OUTPUT_DIR` environment variable. Example filenames:
+`my-host.net-net-stats-1671260819.json`.
+`my-host.net-arp-table-1671260819.json`.
 
-The data within the files looks like:
+The data within the net-stats files looks like:
 
 ```json
 {
@@ -483,6 +484,23 @@ The data within the files looks like:
          "tx-colls": "0",
          "tx-carrier": "0",
          "tx-compressed": "0"
+      }
+   ]
+}
+```
+
+The data within the arp-table files looks like:
+
+```
+{
+   "1671345652": [
+      {
+         "ip": "192.168.0.5",
+         "hwtype": "0x1",
+         "flags": "0x2",
+         "hwaddr": "e4:5f:01:69:d5:62",
+         "mask": "*",
+         "dev": "br-lan"
       }
    ]
 }

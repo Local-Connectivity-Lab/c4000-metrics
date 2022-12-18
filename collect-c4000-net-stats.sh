@@ -1,9 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
-# Collects network status CenturyLink C4000XG routers (and possibly others) and
-# saves them as timestamped json. Requires SSH login as non-root "admin" user
-# to be enabled.
+# Collects network stats from CenturyLink C4000 routers (and possibly others)
+# and saves them as timestamped json. Requires SSH login as non-root "admin"
+# user to be enabled.
 
 HOSTNAME="my-hostname"
 PASSWORD="my-password"
@@ -24,16 +24,19 @@ rm $PIPE
 # Write your password in the pipe
  echo "$PASSWORD" >&3
 # Connect with sshpass -d
-STATS="$(sshpass -d3 ssh "admin@${HOSTNAME}" "cat /proc/net/dev")"
+NET_STATS="$(sshpass -d3 ssh "admin@${HOSTNAME}" "cat /proc/net/dev")"
+ARP_TABLE="$(sshpass -d3 ssh "admin@${HOSTNAME}" "cat /proc/net/arp")"
 # Close the pipe when done
 exec 3>&-
 
 # Format into JSON
 NOW=$(date +%s)
-OUTPUT_FILE="${OUTPUT_DIR}/${HOSTNAME}-${NOW}.json"
-COLUMNS="interface,rx-bytes,rx-packets,rx-errs,rx-drop,rx-fifo,rx-frame,rx-compressed,rx-multicast,tx-bytes,tx-packets,tx-errs,tx-drop,tx-fifo,tx-colls,tx-carrier,tx-compressed"
+NET_STATS_OUTPUT_FILE="${OUTPUT_DIR}/${HOSTNAME}-net-stats-${NOW}.json"
+NET_STATS_COLUMNS="interface,rx-bytes,rx-packets,rx-errs,rx-drop,rx-fifo,rx-frame,rx-compressed,rx-multicast,tx-bytes,tx-packets,tx-errs,tx-drop,tx-fifo,tx-colls,tx-carrier,tx-compressed"
 # tail +3 strips the column headers so only data is seen
 # interface names look like "wlan0:", so use tr to strip the colon
-tail +3 <(tr -d ':'  <<< "$STATS") | column --table-columns "$COLUMNS" --table-name "$NOW" --json > "$OUTPUT_FILE"
+tail +3 <(tr -d ':'  <<< "$NET_STATS") | column --table-columns "$NET_STATS_COLUMNS" --table-name "$NOW" --json > "$NET_STATS_OUTPUT_FILE"
+NET_STATS_OUTPUT_FILE="${OUTPUT_DIR}/${HOSTNAME}-arp-table-${NOW}.json"
+(tail +2 <<< "$ARP_TABLE") | column --table-columns ip,hwtype,flags,hwaddr,mask,dev --table-name "$NOW" --json > "$ARP_TABLE_OUTPUT_FILE"
 
-echo "wrote $OUTPUT_FILE"
+echo "wrote $NET_STATS_OUTPUT_FILE"
