@@ -491,7 +491,7 @@ The data within the net-stats files looks like:
 
 The data within the arp-table files looks like:
 
-```
+```json
 {
    "1671345652": [
       {
